@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import styled, { DefaultTheme, css } from 'styled-components/native';
 
 import { FlattenSimpleInterpolation } from 'styled-components';
@@ -14,7 +14,7 @@ import { FlattenSimpleInterpolation } from 'styled-components';
 export type Item = {
   value: string;
   text: string;
-}
+};
 
 export enum ThemeEnum {
   disabled = 'disabled',
@@ -38,7 +38,7 @@ enum StylePropEnum {
 
 type ThemeStyle<K extends string, T> = {
   [P in K]: T;
-}
+};
 
 interface ThemeType {
   theme: ThemeEnum;
@@ -103,7 +103,10 @@ const bsCss = css`
   shadow-radius: 5;
 `;
 
-export const themeStylePropCollection: ThemeStyle<ThemeEnum, RootBoxTheme | TextTheme> = {
+export const themeStylePropCollection: ThemeStyle<
+  ThemeEnum,
+  RootBoxTheme | TextTheme
+> = {
   disabled: {
     rootbox: {
       backgroundColor: 'transparent',
@@ -214,7 +217,11 @@ export interface Props {
   placeholder?: string;
   activeOpacity: number;
   disabled?: boolean;
+  onPress?: () => void;
 }
+export const toggleList = ({ listOpen, setListOpen }) => (): void => {
+  setListOpen(!listOpen);
+};
 
 function Select(props: Props): React.ReactElement {
   const {
@@ -225,15 +232,11 @@ function Select(props: Props): React.ReactElement {
     placeholder,
     activeOpacity,
     disabled,
+    onPress,
   } = props;
 
   const [listOpen, setListOpen] = useState<boolean>(false);
-  const toggleList = useCallback(
-    (e) => {
-      setListOpen(!listOpen);
-    },
-    [listOpen],
-  );
+  const onPressFn = onPress || toggleList({ listOpen, setListOpen });
 
   const defaultTheme = disabled ? 'disabled' : !theme ? 'none' : theme;
   const rootViewTheme = disabled
@@ -254,7 +257,7 @@ function Select(props: Props): React.ReactElement {
       <TouchableOpacity
         testID={testID}
         activeOpacity={activeOpacity}
-        onPress={toggleList}
+        onPress={onPressFn}
         disabled={disabled}
       >
         <RootSelect

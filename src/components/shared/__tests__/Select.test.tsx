@@ -3,7 +3,7 @@ import 'react-native';
 import * as React from 'react';
 
 import { RenderResult, fireEvent, render } from '@testing-library/react-native';
-import Select, { Item, Props, TESTID, ThemeEnum } from '../Select';
+import Select, { Item, Props, TESTID, ThemeEnum, toggleList } from '../Select';
 
 // Note: test renderer must be required after react-native.
 import renderer from 'react-test-renderer';
@@ -20,7 +20,9 @@ type selectProp<K extends string> = {
   [T in K]: Props;
 };
 
-const mockProp: selectProp<'noTheme' | 'inputTheme' | 'themeAndRootView' | 'disabled'> = {
+const mockProp: selectProp<
+  'noTheme' | 'inputTheme' | 'themeAndRootView' | 'disabled'
+> = {
   noTheme: {
     testID: 'select',
     placeholder: 'select',
@@ -100,6 +102,17 @@ describe('[Select] render', () => {
 
     beforeEach(() => {
       testingLib = render(component);
+    });
+    it('check item is toggled', () => {
+      const mockedOnPressFn = jest.fn();
+      const onPressFn = toggleList({ listOpen: false, setListOpen: mockedOnPressFn });
+      const theme = 'noTheme';
+      const props = createTestProps({ case: theme, prop: { onPress: onPressFn } });
+      const component = <Select {...props} />;
+      const testingLib = render(component);
+      const selectRoot = testingLib.getByTestId(props.testID);
+      fireEvent.press(selectRoot);
+      expect(mockedOnPressFn).toHaveBeenCalled();
     });
 
     it('check theme and rootTextStyle and placeholder with case "notheme"', () => {
